@@ -1,6 +1,9 @@
-FROM python:3.12
+FROM python:3.12-slim
+RUN useradd --system --no-create-home app
 WORKDIR /app
-COPY . .
-RUN pip install -r requirements.txt
-EXPOSE 5000
-CMD gunicorn --bind 127.0.0.1:5000 app:app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py .
+USER app
+EXPOSE 8002
+CMD ["gunicorn", "--bind", "0.0.0.0:8002", "--access-logfile", "-", "app:app"]
